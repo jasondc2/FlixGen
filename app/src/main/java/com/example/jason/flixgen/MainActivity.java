@@ -18,6 +18,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     Button b1,b2;
     EditText ed1,ed2;
+    final DBHelper db = new DBHelper(this);
 
     //TextView tx1;
 
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_main);
+
 
         b1 = (Button) findViewById(R.id.button1);
         ed1 = (EditText) findViewById(R.id.editText1);
@@ -37,13 +39,15 @@ public class MainActivity extends AppCompatActivity {
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ed1.getText().toString().equals("admin") &&
-                        ed2.getText().toString().equals("admin")) {
-                    Toast.makeText(getApplicationContext(),
-                            "Logging In...", Toast.LENGTH_SHORT).show();
-                    login(v);
-                } else {
-                    Toast.makeText(getApplicationContext(), "Wrong Credentials", Toast.LENGTH_SHORT).show();
+                for (int i = 1; i <= db.getUsersCount(); i++) {
+                    if (ed1.getText().toString().equals(db.getUser(i).getUsername()) &&
+                            ed2.getText().toString().equals(db.getUser(i).getPassword())) {
+                        Toast.makeText(getApplicationContext(),
+                                "Logging In...", Toast.LENGTH_SHORT).show();
+                        login(v);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Wrong Credentials", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
@@ -56,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
         b2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                Intent myIntent = new Intent(v.getContext(), NewUser.class);
+                startActivityForResult(myIntent, 0);
             }
         });
 

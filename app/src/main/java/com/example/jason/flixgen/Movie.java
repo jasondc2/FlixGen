@@ -21,6 +21,10 @@ public class Movie {
         this.actors = actors;
     }
 
+    public int getId() { return id; }
+
+    private void setId(int id) { this.id = id; }
+
     public String getTitle() {
         return title;
     }
@@ -45,9 +49,7 @@ public class Movie {
         this.rated = rated;
     }
 
-    public String getGenre() {
-        return genre;
-    }
+    public String getGenre() { return genre; }
 
     private void setGenre(String genre) {
         this.genre = genre;
