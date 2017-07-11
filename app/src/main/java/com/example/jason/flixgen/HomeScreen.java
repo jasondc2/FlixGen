@@ -2,6 +2,8 @@ package com.example.jason.flixgen;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -27,6 +30,7 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -39,8 +43,10 @@ public class HomeScreen extends YouTubeBaseActivity {
     //private ListView lv;
     private EditText ed;
     private Button b1;
+    private Button b2;
     private TextView tv;
     public String title;
+    private ImageView iv;
 
     private YouTubePlayerView youTubePlayerView;
     private YouTubePlayer.OnInitializedListener onInitializedListener;
@@ -49,12 +55,13 @@ public class HomeScreen extends YouTubeBaseActivity {
     public String KEY = "4207e11d";
 
     public String YTUBE;
+    public String posterURL;
 
 
     ArrayList<HashMap<String, String>> movieList;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_home);
 
@@ -62,7 +69,10 @@ public class HomeScreen extends YouTubeBaseActivity {
         //lv = (ListView) findViewById(R.id.list);
         ed = (EditText) findViewById(R.id.rating);
         b1 = (Button) findViewById(R.id.search);
+        b2 = (Button) findViewById(R.id.clear);
         tv = (TextView) findViewById(R.id.result1);
+        iv = (ImageView) findViewById(R.id.posterView);
+
         youTubePlayerView = (YouTubePlayerView) findViewById(R.id.you_tube);
         onInitializedListener = new YouTubePlayer.OnInitializedListener() {
             @Override
@@ -103,12 +113,16 @@ public class HomeScreen extends YouTubeBaseActivity {
 
 
 
-
-
             }
         });
-       ;
 
+        b2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(v.getContext(), HomeScreen.class);
+                startActivityForResult(myIntent, 0);
+            }
+        });
     }
 
     private class GetMovies extends AsyncTask<Void, Void, String> {
@@ -116,7 +130,7 @@ public class HomeScreen extends YouTubeBaseActivity {
 
         protected void onPreExecute() {
             //progressBar.setVisibility(View.VISIBLE);
-            tv.setText("");
+            //tv.setText("");
         }
 
         protected String doInBackground(Void... urls) {
@@ -159,15 +173,56 @@ public class HomeScreen extends YouTubeBaseActivity {
                     String mRating = obj.getString("Rated");
                     String mGenre = obj.getString("Genre");
                     String mActor = obj.getString("Actors");
+                    String mPoster = obj.getString("Poster");
+
+                    posterURL = mPoster;
+                    new DownLoadImageTask(iv).execute(posterURL);
+
 
                     tv.setText(mTitle + ", " + mRating + ", " + mYear + ", " + mGenre + ", " + mActor);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-               // tv.setText(mTitle);
             }
         }
-    }   
+    }
+
+    private class DownLoadImageTask extends AsyncTask<String,Void,Bitmap>{
+        ImageView imageView;
+
+        public DownLoadImageTask(ImageView imageView){
+            this.imageView = imageView;
+        }
+
+        /*
+            doInBackground(Params... params)
+                Override this method to perform a computation on a background thread.
+         */
+        protected Bitmap doInBackground(String...urls){
+            String urlOfImage = urls[0];
+            Bitmap logo = null;
+            try{
+                InputStream is = new URL(urlOfImage).openStream();
+                /*
+                    decodeStream(InputStream is)
+                        Decode an input stream into a bitmap.
+                 */
+                logo = BitmapFactory.decodeStream(is);
+            }catch(Exception e){ // Catch the download exception
+                e.printStackTrace();
+            }
+            return logo;
+        }
+
+        /*
+            onPostExecute(Result result)
+                Runs on the UI thread after doInBackground(Params...).
+         */
+        protected void onPostExecute(Bitmap result){
+            imageView.setImageBitmap(result);
+        }
+    }
 }
 
