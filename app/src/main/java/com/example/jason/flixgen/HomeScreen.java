@@ -1,5 +1,6 @@
 package com.example.jason.flixgen;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -36,17 +37,25 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class HomeScreen extends YouTubeBaseActivity {
+    private Activity mActivity;
 
     private String TAG = HomeScreen.class.getSimpleName();
     //private ListView lv;
     private EditText ed;
     private Button b1;
     private Button b2;
+    private Button b3;
+    private Button b4;
     private TextView tv;
     public String title;
     private ImageView iv;
+
+    public  JSONObject obj;
+    public String mTitle;
+    public String mGenre;
 
     private YouTubePlayerView youTubePlayerView;
     private YouTubePlayer.OnInitializedListener onInitializedListener;
@@ -57,19 +66,22 @@ public class HomeScreen extends YouTubeBaseActivity {
     public String YTUBE;
     public String posterURL;
 
-
     ArrayList<HashMap<String, String>> movieList;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_home);
+        final DBHelper db = new DBHelper(this);
+
 
         movieList = new ArrayList<>();
         //lv = (ListView) findViewById(R.id.list);
         ed = (EditText) findViewById(R.id.rating);
         b1 = (Button) findViewById(R.id.search);
         b2 = (Button) findViewById(R.id.clear);
+        b3 = (Button) findViewById(R.id.add);
+        b4 = (Button) findViewById(R.id.testies);
         tv = (TextView) findViewById(R.id.result1);
         iv = (ImageView) findViewById(R.id.posterView);
 
@@ -92,6 +104,10 @@ public class HomeScreen extends YouTubeBaseActivity {
             @Override
             public void onClick(View v) {
 
+
+                //GetMovies[] movieSearch = new GetMovies[10];
+
+
                 title = ed.getText().toString();
 
                 if(title.equals("Guardians of the Galaxy Vol 2")||title.equals("guardians of the galaxy vol 2")) {
@@ -104,13 +120,16 @@ public class HomeScreen extends YouTubeBaseActivity {
                 {
                     YTUBE = "VSB4wGIdDwo";
                 }
+                else if(title.equals("Spider Man Homecoming")||title.equals("spider man homecoming"))
+                {
+                    YTUBE = "VSB4wGIdDwo";
+                }
                 else
-                    YTUBE = "5dsGWM5XGdg";
+                    YTUBE = "iBFrKgaMYv4";
 
                 youTubePlayerView.initialize("AIzaSyDk5mQRP-tUKmQrwgXBseRJMLVP1YlOMzM", onInitializedListener);
 
-                new GetMovies().execute();
-
+                new GetMovies().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
 
 
             }
@@ -121,8 +140,29 @@ public class HomeScreen extends YouTubeBaseActivity {
             public void onClick(View v) {
                 Intent myIntent = new Intent(v.getContext(), HomeScreen.class);
                 startActivityForResult(myIntent, 0);
+
             }
         });
+
+        b3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //db.addMovie(new Movie(2,mTitle, mGenre));
+                db.addMovie(db.getUser(1), mTitle, mGenre);
+            }
+        });
+
+        b4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //db.getUser(3);
+
+                tv.setText(db.getUser(1).getMovieTitle(mTitle) + db.getUser(1).getMovieGenre(mGenre));
+            }
+        });
+
+
     }
 
     private class GetMovies extends AsyncTask<Void, Void, String> {
@@ -167,15 +207,17 @@ public class HomeScreen extends YouTubeBaseActivity {
             for (int i = 0; i < response.length(); i++) {
                 try {
                     //JSONObject movieObject = new JSONObject(response);
-                    JSONObject obj = new JSONObject(response);
-                    String mTitle = obj.getString("Title");
+                    obj = new JSONObject(response);
+                    mTitle = obj.getString("Title");
                     String mYear = obj.getString("Year");
                     String mRating = obj.getString("Rated");
-                    String mGenre = obj.getString("Genre");
+                    mGenre = obj.getString("Genre");
                     String mActor = obj.getString("Actors");
                     String mPoster = obj.getString("Poster");
 
+
                     posterURL = mPoster;
+
                     new DownLoadImageTask(iv).execute(posterURL);
 
 
@@ -189,10 +231,10 @@ public class HomeScreen extends YouTubeBaseActivity {
         }
     }
 
-    private class DownLoadImageTask extends AsyncTask<String,Void,Bitmap>{
+    private class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView imageView;
 
-        public DownLoadImageTask(ImageView imageView){
+        public DownLoadImageTask(ImageView imageView) {
             this.imageView = imageView;
         }
 
@@ -200,17 +242,17 @@ public class HomeScreen extends YouTubeBaseActivity {
             doInBackground(Params... params)
                 Override this method to perform a computation on a background thread.
          */
-        protected Bitmap doInBackground(String...urls){
+        protected Bitmap doInBackground(String... urls) {
             String urlOfImage = urls[0];
             Bitmap logo = null;
-            try{
+            try {
                 InputStream is = new URL(urlOfImage).openStream();
                 /*
                     decodeStream(InputStream is)
                         Decode an input stream into a bitmap.
                  */
                 logo = BitmapFactory.decodeStream(is);
-            }catch(Exception e){ // Catch the download exception
+            } catch (Exception e) { // Catch the download exception
                 e.printStackTrace();
             }
             return logo;
@@ -220,9 +262,10 @@ public class HomeScreen extends YouTubeBaseActivity {
             onPostExecute(Result result)
                 Runs on the UI thread after doInBackground(Params...).
          */
-        protected void onPostExecute(Bitmap result){
+        protected void onPostExecute(Bitmap result) {
             imageView.setImageBitmap(result);
         }
     }
+
 }
 

@@ -12,6 +12,8 @@ public class Movie {
     public String genre;
     public String actors;
 
+    public Movie () {}
+
     public Movie (int id, String title, String year, String rated, String genre, String actors) {
         this.id = id;
         this.title = title;
@@ -21,15 +23,20 @@ public class Movie {
         this.actors = actors;
     }
 
+    public Movie (String title, String genre) {
+        this.title = title;
+        this.genre = genre;
+    }
+
     public int getId() { return id; }
 
     private void setId(int id) { this.id = id; }
 
-    public String getTitle() {
-        return title;
+    public String getTitle(String title) {
+        this.title = title; return this.title;
     }
 
-    private void setTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -49,9 +56,9 @@ public class Movie {
         this.rated = rated;
     }
 
-    public String getGenre() { return genre; }
+    public String getGenre(String genre) { this.genre = genre; return this.genre; }
 
-    private void setGenre(String genre) {
+    public void setGenre(String genre) {
         this.genre = genre;
     }
 

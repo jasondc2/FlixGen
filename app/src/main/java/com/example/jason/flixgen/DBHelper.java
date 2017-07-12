@@ -26,6 +26,8 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String KEY_ID = "id";
     private static final String KEY_USERNAME = "Username";
     private static final String KEY_PASS = "Password";
+    private static final String KEY_TITLES = "Titles";
+    private static final String KEY_GENRES = "Genres";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -35,7 +37,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_USERS + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_USERNAME + " TEXT,"
-                + KEY_PASS + " TEXT" + ")";
+                + KEY_PASS + " TEXT" + KEY_TITLES + " TEXT" + KEY_GENRES + " TEXT" + ")";
         db.execSQL(CREATE_USERS_TABLE);
     }
 
@@ -48,20 +50,20 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // Adding new contact
+    // Adding new user
     void addUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_USERNAME, user.getUsername()); // Contact Name
-        values.put(KEY_PASS, user.getPassword()); // Contact Phone
+        values.put(KEY_USERNAME, user.getUsername());
+        values.put(KEY_PASS, user.getPassword());
 
         // Inserting Row
         db.insert(TABLE_USERS, null, values);
         db.close(); // Closing database connection
     }
 
-    // Getting single contact
+    // Getting single user
     User getUser(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -90,9 +92,12 @@ public class DBHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 User user = new User();
+                //Movie movie = new Movie();
                 user.setID(Integer.parseInt(cursor.getString(0)));
                 user.setUsername(cursor.getString(1));
                 user.setPassword(cursor.getString(2));
+                //movie.setTitle(cursor.getString(3));
+                //movie.setGenre(cursor.getString(4));
                 // Adding contact to list
                 userList.add(user);
             } while (cursor.moveToNext());
@@ -134,4 +139,23 @@ public class DBHelper extends SQLiteOpenHelper {
         // return count
         return cursor.getCount();
     }
+
+
+    //Add movie
+    void addMovie(User user, String title, String genre) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        //user.setMovieTitle(title);
+        //user.setMovieGenre(genre);
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_TITLES, user.getMovieTitle(title));
+        values.put(KEY_GENRES, user.getMovieGenre(genre));
+
+        // Inserting Row
+        db.insert(TABLE_USERS, null, values);
+        db.close(); // Closing database connection
+    }
+
+
+
 }
