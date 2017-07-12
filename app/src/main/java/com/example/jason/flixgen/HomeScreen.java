@@ -204,7 +204,7 @@ public class HomeScreen extends YouTubeBaseActivity {
             }
             //progressBar.setVisibility(View.GONE);
             Log.i("INFO", response);
-            for (int i = 0; i < response.length(); i++) {
+            for (int i = 0; i < response.length(); i++) { 
                 try {
                     //JSONObject movieObject = new JSONObject(response);
                     obj = new JSONObject(response);
