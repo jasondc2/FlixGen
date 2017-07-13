@@ -8,6 +8,7 @@
     tools:context="com.example.jason.flixgen.MainActivity"
     tools:showIn="@layout/activity_main">
 
+
     <Button
         android:id="@+id/button2"
         android:layout_width="wrap_content"

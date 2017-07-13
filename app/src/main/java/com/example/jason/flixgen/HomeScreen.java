@@ -48,7 +48,10 @@ public class HomeScreen extends YouTubeBaseActivity {
     private Button b1;
     private Button b2;
     private Button b3;
-    private Button b4;
+    private Button home;
+    private Button dna;
+    private Button recs;
+    private Button login;
     private TextView tv;
     public String title;
     private ImageView iv;
@@ -81,7 +84,10 @@ public class HomeScreen extends YouTubeBaseActivity {
         b1 = (Button) findViewById(R.id.search);
         b2 = (Button) findViewById(R.id.clear);
         b3 = (Button) findViewById(R.id.add);
-        b4 = (Button) findViewById(R.id.testies);
+        home = (Button) findViewById(R.id.home);
+        dna = (Button) findViewById(R.id.userdna);
+        recs = (Button) findViewById(R.id.movie);
+        login = (Button) findViewById(R.id.login);
         tv = (TextView) findViewById(R.id.result1);
         iv = (ImageView) findViewById(R.id.posterView);
 
@@ -98,6 +104,35 @@ public class HomeScreen extends YouTubeBaseActivity {
             }
         };
 
+
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(v.getContext(), HomeScreen.class);
+                startActivityForResult(myIntent, 0);
+            }
+        });
+
+        dna.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(v.getContext(), MovieGene.class);
+                startActivityForResult(myIntent, 0);
+            }});
+
+        recs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(v.getContext(), WatchedMovies.class);
+                startActivityForResult(myIntent, 0);
+            }});
+
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(v.getContext(), MainActivity.class);
+                startActivityForResult(myIntent, 0);
+            }});
 
 
         b1.setOnClickListener(new View.OnClickListener() {
@@ -153,14 +188,14 @@ public class HomeScreen extends YouTubeBaseActivity {
             }
         });
 
-        b4.setOnClickListener(new View.OnClickListener() {
+        /*b4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //db.getUser(3);
 
                 tv.setText(db.getUser(1).getMovieTitle(mTitle) + db.getUser(1).getMovieGenre(mGenre));
             }
-        });
+        });*/
 
 
     }
