@@ -60,6 +60,10 @@ public class HomeScreen extends YouTubeBaseActivity {
     public String mTitle;
     public String mGenre;
 
+    public String passTitle = "";
+    public ArrayList<String> mTitles = new ArrayList<String>();
+    public ArrayList<String> mGenres = new ArrayList<String>();
+
     private YouTubePlayerView youTubePlayerView;
     private YouTubePlayer.OnInitializedListener onInitializedListener;
 
@@ -69,13 +73,15 @@ public class HomeScreen extends YouTubeBaseActivity {
     public String YTUBE;
     public String posterURL;
 
+    final DBHelper db = new DBHelper(this);
+
     ArrayList<HashMap<String, String>> movieList;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_home);
-        final DBHelper db = new DBHelper(this);
+
 
 
         movieList = new ArrayList<>();
@@ -116,6 +122,9 @@ public class HomeScreen extends YouTubeBaseActivity {
         dna.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                convertLists(mGenres);
+                db.addDNA(db.getUser(1), 2, passTitle);
+
                 Intent myIntent = new Intent(v.getContext(), MovieGene.class);
                 startActivityForResult(myIntent, 0);
             }});
@@ -123,6 +132,10 @@ public class HomeScreen extends YouTubeBaseActivity {
         recs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //db.addMovie(db.getUser(1));
+                convertLists(mTitles);
+                db.addMovie(db.getUser(1), 2, passTitle);
+
                 Intent myIntent = new Intent(v.getContext(), WatchedMovies.class);
                 startActivityForResult(myIntent, 0);
             }});
@@ -182,9 +195,11 @@ public class HomeScreen extends YouTubeBaseActivity {
         b3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mTitles.add(mTitle);
+                mGenres.add(mGenre);
 
                 //db.addMovie(new Movie(2,mTitle, mGenre));
-                db.addMovie(db.getUser(1), mTitle, mGenre);
+                //db.addMovie(db.getUser(1), mTitle, mGenre);
             }
         });
 
@@ -302,5 +317,19 @@ public class HomeScreen extends YouTubeBaseActivity {
         }
     }
 
+    void convertLists(ArrayList<String> toBeConverted) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("Watched Movies", new JSONArray(toBeConverted));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String arrayList = json.toString();
+
+        passTitle = arrayList;
+
+    }
 }
 

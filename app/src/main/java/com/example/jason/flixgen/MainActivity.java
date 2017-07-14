@@ -27,13 +27,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_main);
 
-
         b1 = (Button) findViewById(R.id.button1);
         ed1 = (EditText) findViewById(R.id.editText1);
         ed2 = (EditText) findViewById(R.id.editText2);
 
         b2 = (Button) findViewById(R.id.button2);
         //tx1.setVisibility(View.GONE);
+
 
 
         b1.setOnClickListener(new View.OnClickListener() {

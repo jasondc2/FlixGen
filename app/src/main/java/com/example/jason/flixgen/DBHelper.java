@@ -6,6 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +22,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
-    private static final String DATABASE_NAME = "userManager";
+    private static final String DATABASE_NAME = "userManage";
 
     // Contacts table name
     private static final String TABLE_USERS = "users";
@@ -26,8 +30,10 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String KEY_ID = "id";
     private static final String KEY_USERNAME = "Username";
     private static final String KEY_PASS = "Password";
-    private static final String KEY_TITLES = "Titles";
-    private static final String KEY_GENRES = "Genres";
+    private static final String KEY_TITLE = "Title";
+    private static final String KEY_DNA = "DNA";
+    //private static final boolean KEY_ACCESS = true;
+
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -36,9 +42,10 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_USERS + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_USERNAME + " TEXT,"
-                + KEY_PASS + " TEXT" + KEY_TITLES + " TEXT" + KEY_GENRES + " TEXT" + ")";
+                + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_USERNAME + " TEXT,"
+                + KEY_PASS + " TEXT," + KEY_TITLE + " TEXT," + KEY_DNA + " TEXT" + ")";
         db.execSQL(CREATE_USERS_TABLE);
+
     }
 
     @Override
@@ -52,6 +59,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Adding new user
     void addUser(User user) {
+
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -79,6 +87,79 @@ public class DBHelper extends SQLiteOpenHelper {
         return user;
     }
 
+    // Get
+    void addMovie(User user, int id, String title) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        //Cursor cursor = db.execSQL("WHERE")
+        user.setTitle(title);
+        user.setID(id);
+        ContentValues values = new ContentValues();
+        values.put(KEY_TITLE, user.getTitle());
+
+        db.update(TABLE_USERS, values, KEY_ID + " = ?",
+                new String[] { String.valueOf(user.getID())});
+        //db.insert(TABLE_USERS, null, values);
+        db.close();
+    }
+
+    void addDNA(User user, int id, String genre) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        //Cursor cursor = db.execSQL("WHERE")
+        user.setGenre(genre);
+        user.calcDNA();
+        user.setID(id);
+        ContentValues values = new ContentValues();
+        values.put(KEY_DNA, user.getDna());
+
+        db.update(TABLE_USERS, values, KEY_ID + " = ?",
+                new String[] { String.valueOf(user.getID())});
+        //db.insert(TABLE_USERS, null, values);
+        db.close();
+    }
+
+    String getMovie(int id) {
+        String titles;
+        //String selectQuery = "SELECT " + KEY_TITLE + " FROM " + TABLE_USERS;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_USERS, new String[] { KEY_TITLE }, KEY_ID + "=?",
+                new String[] { String.valueOf(id) }, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        User user = new User(cursor.getString(0));
+
+        //titles = cursor.getString(3);
+        titles = user.getTitle();
+            // Adding contact to list
+            //titles.concat(user.getTitle());
+        // return contact
+        return  titles;
+    }
+
+    String getDNA(int id) {
+        String DNA;
+        //String selectQuery = "SELECT " + KEY_TITLE + " FROM " + TABLE_USERS;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_USERS, new String[] { KEY_DNA }, KEY_ID + "=?",
+                new String[] { String.valueOf(id) }, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        User user = new User(cursor.getString(0));
+
+        //titles = cursor.getString(3);
+        DNA = user.getDna();
+        // Adding contact to list
+        //titles.concat(user.getTitle());
+        // return contact
+        return DNA;
+    }
+
+
     // Getting All Contacts
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<User>();
@@ -92,12 +173,10 @@ public class DBHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 User user = new User();
-                //Movie movie = new Movie();
                 user.setID(Integer.parseInt(cursor.getString(0)));
                 user.setUsername(cursor.getString(1));
                 user.setPassword(cursor.getString(2));
-                //movie.setTitle(cursor.getString(3));
-                //movie.setGenre(cursor.getString(4));
+
                 // Adding contact to list
                 userList.add(user);
             } while (cursor.moveToNext());
@@ -138,22 +217,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // return count
         return cursor.getCount();
-    }
-
-
-    //Add movie
-    void addMovie(User user, String title, String genre) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        //user.setMovieTitle(title);
-        //user.setMovieGenre(genre);
-
-        ContentValues values = new ContentValues();
-        values.put(KEY_TITLES, user.getMovieTitle(title));
-        values.put(KEY_GENRES, user.getMovieGenre(genre));
-
-        // Inserting Row
-        db.insert(TABLE_USERS, null, values);
-        db.close(); // Closing database connection
     }
 
 
