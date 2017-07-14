@@ -42,7 +42,7 @@ public class MovieGene extends AppCompatActivity {
         getType();
 
         dnaType.setText(DNA);
-        //dnaDesc.setText(dnaD);
+        dnaDesc.setText(dnaD);
 
         home.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,7 +83,23 @@ public class MovieGene extends AppCompatActivity {
     void getType() {
         //DNA = db.user.getDNA;
         //dnaD = db.user.getDNADesc;
+        /* if(DNA == typeA){
+                dnaD = "No matter what type of movie it is, you love everything that marvel makes, well, " +
+                "except for maybe Howard the Duck. You have accomplished the task of watching all " +
+                "of the recent marvel movies. Make sure you get out to watch Spider Man Homecoming!" +
+                "Also stay up to date on all upcoming marvel movies.";}
+           else if(DNA == typeB) {
+                dnaD = "No matter what type of movie it is, you love everything that marvel makes, well, " +
+                "except for maybe Howard the Duck. You have accomplished the task of watching all " +
+                "of the recent marvel movies. Make sure you get out to watch Spider Man Homecoming!" +
+                "Also stay up to date on all upcoming marvel movies.";}
+         */
 
-        DNA = db.getDNA(2);
+        //DNA = db.getDNA(2);
+        DNA = "Marvel Master";
+        dnaD = "No matter what type of movie it is, you love everything that marvel makes, well, " +
+                "except for maybe Howard the Duck. You have accomplished the task of watching all " +
+                "of the recent marvel movies. Make sure you get out to watch Spider Man Homecoming!" +
+                "Also stay up to date on all upcoming marvel movies.";
     }
 }
